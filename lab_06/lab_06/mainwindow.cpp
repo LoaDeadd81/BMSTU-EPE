@@ -5,7 +5,6 @@
 #include <string>
 #include <cmath>
 
-
 #include "qcustomplot.h"
 
 vector<map<string, float>> project_mod_consts = {
@@ -17,6 +16,8 @@ vector<map<string, float>> project_mod_consts = {
 vector<float> pm_percents = {8, 18, 25, 26, 31, 108};
 vector<float> tm_percents = {36, 36, 18, 18, 28, 136};
 vector<float> wbs_percents = {4, 12, 44, 6, 14, 7, 7, 6, 100};
+vector<float> salary = {150, 125, 145, 115, 115};
+
 
 float calc_PM(float c1, float EAF, float size, float p1) {
     return c1 * EAF * pow(size, p1);
@@ -96,13 +97,21 @@ void MainWindow::calc() {
     ui->lineEditPM->setText(QString::number(all_pm, 'f', 2));
     ui->lineEditTM->setText(QString::number(all_tm, 'f', 2));
 
+    int total_salary = 0;
     for (int i = 0; i < pm_percents.size(); i++) {
         float cur_pm = pm * (pm_percents[i] / 100.0);
         float cur_tm = tm * (tm_percents[i] / 100.0);
 
         ui->tableLifeStages->setItem(i, 0, new QTableWidgetItem(QString::number(cur_pm, 'f', 2)));
         ui->tableLifeStages->setItem(i, 1, new QTableWidgetItem(QString::number(cur_tm, 'f', 2)));
+        if(i < pm_percents.size() - 1) {
+            int sl = cur_pm * salary[i] * 1000;
+            ui->tableLifeStages->setItem(i, 2, new QTableWidgetItem(
+                    QString::number(sl, 'f', 2)));
+            total_salary += sl;
+        }
     }
+    ui->tableLifeStages->setItem(salary.size(), 2, new QTableWidgetItem(QString::number(total_salary, 'f', 2)));
 
     for (int i = 0; i < wbs_percents.size(); i++) {
         float p_m = all_pm * (wbs_percents[i] / 100.0);
